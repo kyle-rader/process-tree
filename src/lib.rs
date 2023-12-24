@@ -55,6 +55,29 @@ pub struct ProcessTree {
 }
 
 impl ProcessTree {
+    pub fn parent(&self) -> Option<&Process> {
+        if let Some(me) = self.processes.get(&self.current_pid) {
+            if let Some(parent) = self.processes.get(&me.parent) {
+                return Some(parent);
+            }
+        }
+        None
+    }
+
+    pub fn ancestry(&self) -> Vec<&Process> {
+        let mut parents = Vec::new();
+        let mut current_pid = self.current_pid;
+
+        while let Some(parent) = self.processes.get(&current_pid) {
+            parents.push(parent);
+            current_pid = parent.parent;
+        }
+
+        parents
+    }
+}
+
+impl ProcessTree {
     pub fn new() -> Result<ProcessTree, ProcessTreeError> {
         let mut processes: HashMap<u32, Process> = HashMap::new();
 
