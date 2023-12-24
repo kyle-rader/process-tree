@@ -3,6 +3,7 @@
         "pids",
         "PROCESSENTRY",
         "SNAPPROCESS",
+        "struct",
         "Toolhelp"
     ]
 }
