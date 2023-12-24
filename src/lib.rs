@@ -23,10 +23,10 @@ pub enum ProcessTreeError {
 
 #[derive(Debug)]
 pub struct Process {
-    name: String,
-    pid: u32,
-    parent: u32,
-    children: Vec<u32>,
+    pub name: String,
+    pub pid: u32,
+    pub parent: u32,
+    pub children: Vec<u32>,
 }
 
 impl From<PROCESSENTRY32W> for Process {
@@ -93,19 +93,19 @@ impl ProcessTree {
             return Err(ProcessTreeError::FailedToGetProcessId);
         }
 
-        #[allow(unused_assignments)]
-        let mut snapshot: Option<HANDLE> = None;
+        #[allow(unused_mut)]
+        let mut snapshot: HANDLE;
 
         // Get the system process snapshot, containing all running processes.
         unsafe {
             match CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, current_pid) {
-                Ok(handle) => snapshot = Some(handle),
+                Ok(handle) => snapshot = handle,
                 Err(e) => return Err(e.into()),
             }
         }
 
-        // We have either got the snapshot, or already returned an error.
-        let snapshot = snapshot.unwrap();
+        // Rebind as immutable.
+        let snapshot = snapshot;
 
         // define the process entry we will fill in with each Process32FirstW and Process32NextW call.
         let mut proc = PROCESSENTRY32W {
