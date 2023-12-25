@@ -8,7 +8,7 @@ use process_tree::ProcessTree;
 
 fn main() -> anyhow::Result<()> {
     let process_tree = ProcessTree::new()?;
-    println!("My ancestors are: {:#?}", process_tree.ancestry());
+    println!("My parents are: {:#?}", process_tree.parents());
     Ok(())
 }
 ```
@@ -16,61 +16,46 @@ fn main() -> anyhow::Result<()> {
 Output:
 ```shell
 $ cargo run --example parents
-Hello, processes!
-My ancestors are: [
+My parents are: [
     Process {
         name: "parents.exe",
-        pid: 19320,
-        parent: 996,
-        children: [],
+        pid: 32628,
+        parent: 7396,
     },
     Process {
         name: "cargo.exe",
-        pid: 996,
-        parent: 18632,
-        children: [
-            19320,
-        ],
+        pid: 7396,
+        parent: 3616,
     },
     Process {
         name: "cargo.exe",
-        pid: 18632,
-        parent: 9032,
-        children: [
-            996,
-        ],
+        pid: 3616,
+        parent: 21332,
     },
     Process {
         name: "pwsh.exe",
-        pid: 9032,
-        parent: 6876,
-        children: [
-            18632,
-        ],
+        pid: 21332,
+        parent: 20060,
     },
     Process {
         name: "Code.exe",
-        pid: 6876,
-        parent: 3372,
-        children: [
-            9032,
-            4080,
-        ],
+        pid: 20060,
+        parent: 30116,
     },
     Process {
         name: "Code.exe",
-        pid: 3372,
-        parent: 17064,
-        children: [
-            17736,
-            15960,
-            17268,
-            6876,
-            3728,
-            16352,
-            5384,
-            14804,
-        ],
+        pid: 30116,
+        parent: 23248,
+    },
+    Process {
+        name: "Code.exe",
+        pid: 23248,
+        parent: 25280,
+    },
+    Process {
+        name: "Code.exe",
+        pid: 25280,
+        parent: 30116,
     },
 ]
 ```
