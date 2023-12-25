@@ -19,43 +19,23 @@ $ cargo run --example parents
 My parents are: [
     Process {
         name: "parents.exe",
-        pid: 32628,
-        parent: 7396,
-    },
-    Process {
-        name: "cargo.exe",
-        pid: 7396,
-        parent: 3616,
-    },
-    Process {
-        name: "cargo.exe",
-        pid: 3616,
-        parent: 21332,
+        pid: 31896,
+        parent: 1324,
     },
     Process {
         name: "pwsh.exe",
-        pid: 21332,
-        parent: 20060,
+        pid: 1324,
+        parent: 1560,
     },
     Process {
-        name: "Code.exe",
-        pid: 20060,
-        parent: 30116,
+        name: "WindowsTerminal.exe",
+        pid: 1560,
+        parent: 7000,
     },
     Process {
-        name: "Code.exe",
-        pid: 30116,
-        parent: 23248,
-    },
-    Process {
-        name: "Code.exe",
-        pid: 23248,
-        parent: 25280,
-    },
-    Process {
-        name: "Code.exe",
-        pid: 25280,
-        parent: 30116,
+        name: "explorer.exe",
+        pid: 7000,
+        parent: 6952,
     },
 ]
 ```
