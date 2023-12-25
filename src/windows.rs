@@ -1,4 +1,8 @@
-use std::{collections::HashMap, ffi::OsString, os::windows::ffi::OsStringExt};
+use std::{
+    collections::{HashMap, HashSet},
+    ffi::OsString,
+    os::windows::ffi::OsStringExt,
+};
 
 use thiserror::Error;
 use windows::Win32::{
@@ -26,7 +30,6 @@ pub struct Process {
     pub name: String,
     pub pid: u32,
     pub parent: u32,
-    pub children: Vec<u32>,
 }
 
 impl From<PROCESSENTRY32W> for Process {
@@ -43,43 +46,39 @@ impl From<PROCESSENTRY32W> for Process {
                 .to_string(),
             pid: proc.th32ProcessID,
             parent: proc.th32ParentProcessID,
-            children: Vec::new(),
         }
     }
 }
+
+type ProcessesRaw = HashMap<u32, PROCESSENTRY32W>;
 
 #[derive(Debug)]
 pub struct ProcessTree {
     current_pid: u32,
-    processes: HashMap<u32, Process>,
+    processes: ProcessesRaw,
 }
 
 impl ProcessTree {
-    pub fn parent(&self) -> Option<&Process> {
-        if let Some(me) = self.processes.get(&self.current_pid) {
-            if let Some(parent) = self.processes.get(&me.parent) {
-                return Some(parent);
-            }
-        }
-        None
-    }
-
-    pub fn ancestry(&self) -> Vec<&Process> {
-        let mut parents = Vec::new();
+    pub fn parents(&self) -> Vec<Process> {
+        let mut parents: Vec<Process> = Vec::new();
         let mut current_pid = self.current_pid;
+        let mut pids = HashSet::new();
 
         while let Some(parent) = self.processes.get(&current_pid) {
-            parents.push(parent);
-            current_pid = parent.parent;
+            parents.push((*parent).into());
+            current_pid = parent.th32ParentProcessID;
+            if !pids.insert(current_pid) {
+                // Loop in process tree.
+                // Possible since Windows parent PIDs can be reused.
+                break;
+            }
         }
 
         parents
     }
-}
 
-impl ProcessTree {
     pub fn new() -> Result<ProcessTree, ProcessTreeError> {
-        let mut processes: HashMap<u32, Process> = HashMap::new();
+        let mut processes: ProcessesRaw = ProcessesRaw::default();
 
         #[allow(unused_assignments)]
         let mut current_pid: u32 = 0;
@@ -118,21 +117,11 @@ impl ProcessTree {
         }
 
         // Got the first process, now loop through the rest.
-        processes.insert(proc.th32ProcessID, proc.into());
+        processes.insert(proc.th32ProcessID, proc);
 
         unsafe {
             while Process32NextW(snapshot, &mut proc).is_ok() {
-                processes.insert(proc.th32ProcessID, proc.into());
-            }
-        }
-
-        // Fill in children vecs
-        let pids = processes.keys().copied().collect::<Vec<u32>>();
-        for pid in pids {
-            let parent_pid = processes.get(&pid).unwrap().parent;
-
-            if let Some(parent) = processes.get_mut(&parent_pid) {
-                parent.children.push(pid);
+                processes.insert(proc.th32ProcessID, proc);
             }
         }
 
