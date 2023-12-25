@@ -2,7 +2,7 @@
 
 A library wrapping [windows-rs](https://crates.io/crates/windows) to provide a `ProcessTree` struct which can get the ancestry of parent processes for the current process. (And in the future, more!)
 
-Example Usage:
+## Example Usage:
 ```rust
 use process_tree::ProcessTree;
 
@@ -58,4 +58,15 @@ My parents are: [
         parent: 30116,
     },
 ]
+```
+
+## Performance
+Creating a `ProcessTree` takes a snapshot fo the processes on the system. We only parse the executable names while finding parents.
+
+With an AMD Ryzen 9 3900XT 12-Core CPU @ 3.80 GHz the example CLI can get it's parents in roughly 15ms.
+```
+❯ hyperfine .\target\release\examples\parents.exe
+Benchmark 1: .\target\release\examples\parents.exe
+  Time (mean ± σ):      17.1 ms ±   1.9 ms    [User: 0.1 ms, System: 1.5 ms]
+  Range (min … max):    13.7 ms …  23.9 ms    130 runs
 ```
