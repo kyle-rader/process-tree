@@ -63,7 +63,7 @@ My parents are: [
 ## Performance
 Creating a `ProcessTree` takes a snapshot fo the processes on the system. We only parse the executable names while finding parents.
 
-With an AMD Ryzen 9 3900XT 12-Core CPU @ 3.80 GHz the example CLI can get it's parents in roughly 15ms.
+With an AMD Ryzen 9 3900XT 12-Core CPU @ 3.80 GHz the example CLI can get it's parents in roughly `17ms`.
 ```
 ❯ hyperfine .\target\release\examples\parents.exe
 Benchmark 1: .\target\release\examples\parents.exe
