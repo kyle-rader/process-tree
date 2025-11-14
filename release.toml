@@ -1,3 +1,4 @@
 tag-name = "{{version}}"
 tag-message = "{{tag_name}}"
 allow-branch = ["main"]
+verify = false
